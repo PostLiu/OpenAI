@@ -1,0 +1,6 @@
+GET http://192.168.0.123:8150/api/Index/getIndexAdList
+
+
+
+###
+POST http://192.168.0.123:8150/api/Goods/goods_list
