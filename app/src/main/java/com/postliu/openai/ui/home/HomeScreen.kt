@@ -70,6 +70,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.lt.compose_views.banner.Banner
@@ -82,7 +84,6 @@ import com.postliu.openai.base.UIState.Companion.doCatch
 import com.postliu.openai.base.UIState.Companion.doFailed
 import com.postliu.openai.base.UIState.Companion.doStart
 import com.postliu.openai.base.UIState.Companion.doSuccess
-import com.postliu.openai.base.items
 import com.postliu.openai.icons.GoodsPointIcon
 import com.postliu.openai.model.local.HomeArea
 import com.postliu.openai.model.local.LocalBannerData
@@ -240,8 +241,11 @@ fun HomeScreen(
                         }
                     }
                 }
-                items(goods) {
-                    it?.let { HomeSimpleGoods(data = it) }
+                items(
+                    count = goods.itemCount,
+                    key = goods.itemKey { it.id },
+                    contentType = goods.itemContentType { "goods" }) { index ->
+                    goods[index]?.let { HomeSimpleGoods(data = it) }
                 }
                 val state = goods.loadState
                 if (state.append is LoadState.Loading) {

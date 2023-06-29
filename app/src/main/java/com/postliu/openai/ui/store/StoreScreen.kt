@@ -35,7 +35,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.postliu.openai.R
 import com.postliu.openai.base.SystemBarTransparent
@@ -135,8 +136,11 @@ fun StorePage(
                             }
                         }
                     }
-                    items(store, key = { it.storeId }) {
-                        it?.let { it1 -> StoreBaseInfo(data = it1) }
+                    items(
+                        count = store.itemCount,
+                        key = store.itemKey { it.storeId },
+                        contentType = store.itemContentType { "contentType" }) {
+                        store[it]?.let { it1 -> StoreBaseInfo(data = it1) }
                     }
                 },
                 modifier = Modifier

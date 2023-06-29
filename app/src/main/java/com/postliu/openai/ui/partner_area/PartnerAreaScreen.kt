@@ -2,12 +2,29 @@ package com.postliu.openai.ui.partner_area
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.ArrowBack
 import androidx.compose.runtime.Composable
@@ -28,9 +45,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.postliu.openai.base.SystemBarColor
-import com.postliu.openai.base.items
 import com.postliu.openai.model.local.LocalHomeGoodsData
 import com.postliu.openai.ui.theme.OpenAITheme
 import com.ramcosta.composedestinations.annotation.Destination
@@ -93,7 +111,10 @@ private fun PartnerAreaGoodsGrid(
             when (val appendState = lazyPagingItems.loadState.append) {
                 is LoadState.Error -> {
                     item(span = { GridItemSpan(maxLineSpan) }) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Button(onClick = { lazyPagingItems.retry() }) {
                                 Text(text = appendState.error.message.orEmpty()
                                     .ifEmpty { "加载失败,点击重试" })
@@ -104,7 +125,10 @@ private fun PartnerAreaGoodsGrid(
 
                 is LoadState.Loading -> {
                     item(span = { GridItemSpan(maxLineSpan) }) {
-                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp))
                         }
                     }
@@ -113,7 +137,10 @@ private fun PartnerAreaGoodsGrid(
                 is LoadState.NotLoading -> {
                     if (refreshState.endOfPaginationReached) {
                         item(span = { GridItemSpan(maxLineSpan) }) {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 Text(text = "没有更多数据了哦~")
                             }
                         }
@@ -121,8 +148,11 @@ private fun PartnerAreaGoodsGrid(
                 }
             }
             goods?.let {
-                items(goods) {
-                    it?.let { PartnerAreaGoods(data = it) }
+                items(
+                    count = goods.itemCount,
+                    key = goods.itemKey { it.id },
+                    contentType = goods.itemContentType { "goods" }) { index ->
+                    goods[index]?.let { it1 -> PartnerAreaGoods(data = it1) }
                 }
             }
         },
@@ -148,7 +178,8 @@ private fun PartnerEmpty(
         is LoadState.Error -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Button(onClick = { lazyPagingItems.refresh() }) {
-                    Text(text = refreshState.error.message.orEmpty().ifEmpty { "加载失败,点击重试" })
+                    Text(
+                        text = refreshState.error.message.orEmpty().ifEmpty { "加载失败,点击重试" })
                 }
             }
         }
@@ -199,7 +230,13 @@ private fun PartnerAreaGoods(data: LocalHomeGoodsData, onClick: (LocalHomeGoodsD
     }
 }
 
-@Preview(device = Devices.PIXEL_3, showBackground = true, backgroundColor = 0xffffffff, widthDp = 375, heightDp = 812)
+@Preview(
+    device = Devices.PIXEL_3,
+    showBackground = true,
+    backgroundColor = 0xffffffff,
+    widthDp = 375,
+    heightDp = 812
+)
 @Composable
 fun PartnerAreaGoodsPreview() {
     OpenAITheme {
